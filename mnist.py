@@ -1,42 +1,27 @@
-import numpy as np
-from urllib import request
-import gzip
-import pickle
+import tensorflow as tf
+import matplotlib.pyplot as plt
 
-filename = [
-["training_images","train-images-idx3-ubyte.gz"],
-["test_images","t10k-images-idx3-ubyte.gz"],
-["training_labels","train-labels-idx1-ubyte.gz"],
-["test_labels","t10k-labels-idx1-ubyte.gz"]
-]
+# MNIST 데이터 불러오기
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
-def download_mnist():
-    base_url = "http://yann.lecun.com/exdb/mnist/"
-    for name in filename:
-        print("Downloading "+name[1]+"...")
-        request.urlretrieve(base_url+name[1], name[1])
-    print("Download complete.")
+# 정규화 (0~1 사이로)
+x_train, x_test = x_train / 255.0, x_test / 255.0
 
-def save_mnist():
-    mnist = {}
-    for name in filename[:2]:
-        with gzip.open(name[1], 'rb') as f:
-            mnist[name[0]] = np.frombuffer(f.read(), np.uint8, offset=16).reshape(-1,28*28)
-    for name in filename[-2:]:
-        with gzip.open(name[1], 'rb') as f:
-            mnist[name[0]] = np.frombuffer(f.read(), np.uint8, offset=8)
-    with open("mnist.pkl", 'wb') as f:
-        pickle.dump(mnist,f)
-    print("Save complete.")
+# 모델 구성
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(10, activation='softmax')
+])
 
-def init():
-    download_mnist()
-    save_mnist()
+# 모델 컴파일
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
 
-def load():
-    with open("mnist.pkl",'rb') as f:
-        mnist = pickle.load(f)
-    return mnist["training_images"], mnist["training_labels"], mnist["test_images"], mnist["test_labels"]
+# 모델 학습
+model.fit(x_train, y_train, epochs=5)
 
-if __name__ == '__main__':
-    init()
+# 모델 평가
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f'\n테스트 정확도: {test_acc:.4f}')
