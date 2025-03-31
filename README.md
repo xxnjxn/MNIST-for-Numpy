@@ -74,15 +74,16 @@ plt.show() # Show the image
 
 Once you get `mnist.pkl`, you don't need to call **init()** anymore. Everything you need to do is to locate `mnist.py` and `mnist.pkl` in your working directory and to call **load()**.
 
-## Contribution by Eunjin
+## Update
 
-This repository was forked and updated as part of a hands-on open source programming course.
+This repository was forked and updated as part of an open source programming course.
 
-Modifications made by Eunjin include:
+Modifications include:
 
-- Restructuring the code using TensorFlow and Keras
+- Refactoring the code using TensorFlow and Keras
 - Training a basic MNIST classifier model
 - Simplifying the dataset loading process
 - Testing and verifying the results
 
-Thank you for the original repository.
+Thanks to the original author for providing the base code.
+
